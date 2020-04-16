@@ -1,0 +1,77 @@
+﻿@page "/"
+@using System.Threading
+@using Microsoft.AspNetCore.SignalR.Client
+@inject IJSRuntime JsRuntime
+@inject NavigationManager NavigationManager
+
+<div class="form-group">
+    <label>
+        Snapshot Id:
+        <input @bind="_snapshotId" />
+    </label>
+</div>
+
+<button @onclick="StartSnapshotsStream" class="btn btn-primary">Start Single Snapshots</button>
+<button @onclick="StopSnapshotsStream" class="btn btn-primary">Stop Single Snapshots</button>
+
+<hr>
+
+@code {
+    // ReSharper disable UnusedMember.Local
+
+    private HubConnection _ssHubConnection;
+    private int _snapshotId = 0;
+    private int _ssCount;
+    CancellationTokenSource _cancellationTokenSource;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        _ssHubConnection = new HubConnectionBuilder()
+            .WithUrl(NavigationManager.ToAbsoluteUri("/snapshotsHub"))
+            .Build();
+
+        _ssHubConnection.On<int[]>("ReceiveMessage", (ss) =>
+        {
+            JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}");
+            _ssCount++;
+            StateHasChanged();
+        });
+
+        await _ssHubConnection.StartAsync();
+    }
+
+    async Task StartSnapshots()
+    {
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshots");
+        await _ssHubConnection.SendAsync("SendSnapshot", _snapshotId, _ssCount);
+        _ssCount++;
+    }
+
+    async Task StartSnapshotsStream()
+    {
+        _cancellationTokenSource = new CancellationTokenSource();
+
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshotsStream");
+        var ssStream = _ssHubConnection.StreamAsync<int[]>(
+        "SnapshotsStream", _cancellationTokenSource.Token);
+
+        await foreach (var ss in ssStream)
+        {
+            await JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}");
+            _ssCount++;
+        }
+    }
+
+    async Task StopSnapshotsStream()
+    {
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss StopSnapshotsStream");
+        _cancellationTokenSource.Cancel();
+        _ssCount = 0;
+    }
+
+    public bool IsConnected =>
+        _ssHubConnection.State == HubConnectionState.Connected;
+    
+    // ReSharper restore UnusedMember.Local
+}
