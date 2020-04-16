@@ -165,17 +165,17 @@ Snapshots Count: <strong>@_ssCount</strong>
             _tempDataSet.AddRange(ssPointValues);
 
             await _lineChartJs.Update();
-            await Task.Delay(10);
+            await Task.Delay(5);
 
             StateHasChanged();
         }
+        _ssCount = 0;
     }
 
     async Task StopSnapshotsStream()
     {
         await JsRuntime.InvokeAsync<string>("console.log", "Ss StopSnapshotsStream");
         _cancellationTokenSource.Cancel();
-        _ssCount = 0;
     }
 
     public bool IsConnected =>
