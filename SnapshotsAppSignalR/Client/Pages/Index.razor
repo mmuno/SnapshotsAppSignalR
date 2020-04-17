@@ -1,17 +1,7 @@
 ﻿@page "/"
-@using System.Drawing
 @using System.Threading
-@using ChartJs.Blazor.ChartJS.Common
-@using ChartJs.Blazor.ChartJS.Common.Axes
-@using ChartJs.Blazor.ChartJS.Common.Axes.Ticks
-@using ChartJs.Blazor.ChartJS.Common.Enums
-@using ChartJs.Blazor.ChartJS.Common.Handlers
-@using ChartJs.Blazor.Charts
-@using ChartJs.Blazor.ChartJS.LineChart
-@using ChartJs.Blazor.ChartJS.Common.Properties
-@using ChartJs.Blazor.Util
+@using Blazorise.Charts
 @using Microsoft.AspNetCore.SignalR.Client
-@using Point = ChartJs.Blazor.ChartJS.Common.Point
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
 
@@ -25,20 +15,116 @@
 
 Snapshots Count: <strong>@_ssCount</strong>
 
-<ChartJsLineChart @ref="_lineChartJs" Config="@_lineConfig" Width="600" Height="300" />
+<LineChart @ref="_lineChart" TItem="double" />
 
 
 @code {
     // ReSharper disable UnusedMember.Local
-
     private HubConnection _ssHubConnection;
     private int _snapshotId = 0;
     private int _ssCount;
     CancellationTokenSource _cancellationTokenSource;
 
-    private ChartJsLineChart _lineChartJs;
-    LineConfig _lineConfig;
-    LineDataset<Point> _tempDataSet;
+    LineChart<double> _lineChart = new LineChart<double>();
+    List<double> _plotData = new List<double>();
+
+    LineChartOptions _options = new LineChartOptions
+    {
+        Legend = new Legend
+        {
+            Display = false
+        },
+        Animation = new Animation()
+        {
+            Duration = 0
+        },
+        SpanGaps = false,
+        Tooltips = new Tooltips()
+        {
+            Enabled = false
+        },
+        Scales = new Scales()
+        {
+            YAxes = new List<Axe>()
+            {
+                new Axe
+                {
+                    Display = false,
+                    Ticks = new AxeTicks()
+                    {
+                        BeginAtZero = false,
+                        Display = true,
+                        Major = new AxeMajorTick
+                        {
+                            Enabled = true
+                        },
+                        Minor = new AxeMinorTick()
+                    },
+                    GridLines = new AxeGridLines()
+                    {
+                        TickMarkLength = 2
+                    }
+                }
+            },
+            XAxes = new List<Axe>()
+            {
+                new Axe
+                {
+                    Display = false,
+                    Ticks = new AxeTicks()
+                    {
+                        BeginAtZero = false,
+                        Display = true,
+                        Major = new AxeMajorTick
+                        {
+                            Enabled = true
+                        },
+                        Minor = new AxeMinorTick()
+                    },
+                    GridLines = new AxeGridLines()
+                    {
+                        TickMarkLength = 2
+                    }
+                }
+            }
+        }
+    };
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await HandleRedraw();
+        }
+    }
+
+    async Task HandleRedraw()
+    {
+        // _lineChart.SetOptions(_options);
+
+        _lineChart.Clear();
+        _lineChart.AddLabel(_labels.ToArray());
+        _lineChart.AddDataSet(GetLineChartDataSet());
+        await _lineChart.Update();
+    }
+
+    LineChartDataset<double> GetLineChartDataSet()
+    {
+        return new LineChartDataset<double>
+        {
+            Label = "# of randoms",
+            Data = _plotData,
+            BackgroundColor = _backgroundColors,
+            BorderColor = _borderColors,
+            Fill = false,
+            PointRadius = 2,
+            BorderDash = new List<int>()
+        };
+    }
+
+    List<string> _labels = new List<string>();
+    readonly List<string> _backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
+    readonly List<string> _borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
     protected override void OnInitialized()
     {
@@ -56,88 +142,7 @@ Snapshots Count: <strong>@_ssCount</strong>
 
         _ssHubConnection.StartAsync();
 
-        // Chart configuration
-        _lineConfig = new LineConfig
-        {
-            Options = new LineOptions
-            {
-                Responsive = true,
-                ResponsiveAnimationDuration = 0,
-                Animation = new Animation
-                {
-                    Duration = 0
-                },
-                Legend = new Legend
-                {
-                    Display = false
-                },
-                Title = new OptionsTitle
-                {
-                    Display = true,
-                    Text = "Snapshots"
-                },
-                Tooltips = new Tooltips
-                {
-                    Mode = InteractionMode.Nearest,
-                    Intersect = false
-                },
-                Scales = new Scales
-                {
-                    yAxes = new List<CartesianAxis>
-        {
-                        new LinearCartesianAxis
-                        {
-                            ScaleLabel = new ScaleLabel
-                            {
-                                LabelString = "Position"
-                            }
-                        }
-                    },
-
-                    xAxes = new List<CartesianAxis>
-        {
-                        new LinearCartesianAxis
-                        {
-                            GridLines = new GridLines
-                            {
-                                Display = false
-                            },
-                            Ticks = new LinearCartesianTicks
-                            {
-                                AutoSkipPadding = 100,
-                                AutoSkip = true,
-                            },
-                            ScaleLabel = new ScaleLabel
-                            {
-                                LabelString = "Time",
-                            }
-                        }
-                    }
-                },
-
-                Hover = new LineOptionsHover
-                {
-                    AnimationDuration = 0,
-                    Intersect = true,
-                    Mode = InteractionMode.Y
-                }
-            }
-        };
-
-        _tempDataSet = new LineDataset<Point>
-        {
-            BackgroundColor = ColorUtil.FromDrawingColor(Color.DodgerBlue),
-            BorderColor = ColorUtil.FromDrawingColor(Color.DeepSkyBlue),
-            Label = "Position",
-            Fill = false,
-            BorderWidth = 2,
-            PointRadius = 2,
-            PointBorderWidth = 2,
-            SteppedLine = SteppedLine.False,
-            LineTension = 0
-        };
-
-        _lineConfig.Data.Datasets.Add(_tempDataSet);
+        // Chart Configuration
     }
 
     async Task StartSnapshots()
@@ -152,22 +157,25 @@ Snapshots Count: <strong>@_ssCount</strong>
         _cancellationTokenSource = new CancellationTokenSource();
 
         await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshotsStream");
-        var ssStream = _ssHubConnection.StreamAsync<int[]>(
-        "SnapshotsStream", _cancellationTokenSource.Token);
+        var ssStream = _ssHubConnection.StreamAsync<int[]>("SnapshotsStream", _cancellationTokenSource.Token);
 
         await foreach (var ss in ssStream)
         {
-            await JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}");
+            await JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}, ssSamples {ss.Length}");
             _ssCount++;
+            _plotData.Clear();
 
-            var ssPointValues = ss.Select((t, i) => new Point(i, t)).ToList();
-            _tempDataSet.RemoveRange(0, _tempDataSet.Data.Count);
-            _tempDataSet.AddRange(ssPointValues);
+            // Update Y axis
+            _plotData = ss.Select(ssElement => (double)ssElement).ToList();
 
-            await _lineChartJs.Update();
-            await Task.Delay(5);
+            // Update labels
+            _labels = new List<string>();
+            for (var i = 0; i < ss.Length; i++)
+            {
+                _labels.Add(i.ToString());
+            }
 
-            StateHasChanged();
+            await HandleRedraw();
         }
         _ssCount = 0;
     }
