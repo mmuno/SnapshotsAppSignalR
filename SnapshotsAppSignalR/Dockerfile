@@ -1,12 +1,15 @@
 #See https://aka.ms/containerfastmode to understand how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
 FROM mcr.microsoft.com/dotnet/core/aspnet:3.1.3-buster-slim-arm32v7 AS base
-WORKDIR /Tools
-RUN install_dependencies.sh
 
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
+
+ADD Tools /app
+#RUN ls
+RUN chmod +x install_dependencies.sh
+RUN ./install_dependencies.sh
 
 FROM mcr.microsoft.com/dotnet/core/sdk:3.1-bionic-arm32v7 AS build 
 WORKDIR /src
@@ -18,7 +21,7 @@ COPY ["Client/SnapshotsAppSignalR.Client.csproj", "Client/"]
 #ENV PROTOBUF_TOOLS_OS=$buildtime_os
 #ENV PROTOBUF_TOOLS_CPU=$buildtime_cpu
 #ENV PROTOBUF_PROTOC=/data/protoc
-COPY ["/usr/bin/protoc", "/data/protoc"]
+#COPY ["/usr/bin/protoc", "/data/protoc"]
 RUN dotnet restore "Server/SnapshotsAppSignalR.Server.csproj"
 COPY . .
 WORKDIR "/src/Server"
