@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+		<!--<link href="https://fonts.googleapis.com/css?family=Oswald&display=swap" rel="stylesheet">-->
+		<meta charset="utf-8">
+        <link href="mbscope/static/css/mbscope.css" rel="stylesheet" type="text/css"/>
+		<link href="mbscope/static/css/bokeh.css" rel="stylesheet" type="text/css" />
+		{{ bokeh_css }}
+		{{ bokeh_js }}
+		
+    </head>
+    <body>	
+		
+	    <div id="topheader">
+			<img class="supergraph" src="mbscope/static/img/logo.png"/>
+			<h1  id="title">MBScope Online Signal</h1>
+		</div>
+		<div id="application">
+			{{ plot_div|indent(8) }}
+			{{ plot_script|indent(8) }}
+		</div>
+    </body>
+</html>

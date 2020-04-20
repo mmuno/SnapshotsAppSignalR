@@ -1,0 +1,164 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>metric &#8212; Kraft 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="prev" title="tcpexposer" href="tcpexposer.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="metric">
+<h1>metric<a class="headerlink" href="#metric" title="Permalink to this headline">¶</a></h1>
+<p>Metric daemon is a simple daemon that allows to</p>
+<hr class="docutils" />
+<span class="target" id="module-cloud.daemons.metric.main"></span><dl class="class">
+<dt id="cloud.daemons.metric.main.GetPcInfos">
+<em class="property">class </em><code class="sig-prename descclassname">cloud.daemons.metric.main.</code><code class="sig-name descname">GetPcInfos</code><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Class to get computer informations like
+temperature, cpu load, etc…</p>
+<dl class="method">
+<dt id="cloud.daemons.metric.main.GetPcInfos._get_cpu">
+<code class="sig-name descname">_get_cpu</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos._get_cpu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the CPU usage between 2 interval</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cloud.daemons.metric.main.GetPcInfos._get_disk">
+<code class="sig-name descname">_get_disk</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos._get_disk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the disk usage. This data is usefull to know if
+the shared memory are causing problems.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cloud.daemons.metric.main.GetPcInfos._get_ram">
+<code class="sig-name descname">_get_ram</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos._get_ram" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the ram usage at <strong>t</strong> moment</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cloud.daemons.metric.main.GetPcInfos._print_infos">
+<code class="sig-name descname">_print_infos</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos._print_infos" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the PC informations</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="cloud.daemons.metric.main.GetPcInfos.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.GetPcInfos.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all the informations and returns them</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.metric.main._publish_data">
+<code class="sig-prename descclassname">cloud.daemons.metric.main.</code><code class="sig-name descname">_publish_data</code><span class="sig-paren">(</span><em class="sig-param">ipc_sockets</em>, <em class="sig-param">infos</em><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main._publish_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Publish the computer informations into shared memory via ZeroMQ publish-susbcribe IPC protocol</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.metric.main.run">
+<code class="sig-prename descclassname">cloud.daemons.metric.main.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.metric.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the computer information class and call the publish function</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Kraft</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../supervisor.html">Supervisor</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../daemons.html">Daemons</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="tcpexposer.html">tcpexposer</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">metric</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../daemons.html">Daemons</a><ul>
+      <li>Previous: <a href="tcpexposer.html" title="previous chapter">tcpexposer</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Lucas Clerisse.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/daemons/metric.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

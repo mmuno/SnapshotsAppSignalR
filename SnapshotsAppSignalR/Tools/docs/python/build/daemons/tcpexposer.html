@@ -1,0 +1,210 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>tcpexposer &#8212; Kraft 1.0 documentation</title>
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="../_static/language_data.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="metric" href="metric.html" />
+    <link rel="prev" title="Daemons" href="../daemons.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="tcpexposer">
+<h1>tcpexposer<a class="headerlink" href="#tcpexposer" title="Permalink to this headline">¶</a></h1>
+<p>Kraft is designed to be efficient, which is why all inter-process communication is done locally using ZeroMQ IPCs.
+Sometimes, some processes require the ability to subscribe to the result of one of these socket remotely wia TCP sockets and this is the role of the TCP Exposer.
+This daemon takes a configuration file that associates an IPC socket with a TCP port and simply redistributes the result to that socket.</p>
+<p>As 80% of Kraft is based on publish-subscribe socket, this approach consumes almost no resources.</p>
+<hr class="docutils" />
+<span class="target" id="module-cloud.daemons.tcpexposer.main"></span><div class="section" id="main-py">
+<h2>main.py<a class="headerlink" href="#main-py" title="Permalink to this headline">¶</a></h2>
+<p>The TCP Exposer service.</p>
+<p>Its used to expose IPC sockets.
+to the world using TCP sockets.</p>
+<dl class="class">
+<dt id="cloud.daemons.tcpexposer.main.TCPExposer">
+<em class="property">class </em><code class="sig-prename descclassname">cloud.daemons.tcpexposer.main.</code><code class="sig-name descname">TCPExposer</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">ipc_path</em>, <em class="sig-param">tcp_port</em><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main.TCPExposer" title="Permalink to this definition">¶</a></dt>
+<dd><p>TCPExposer is a Thread subclass.
+Take an IPC path as input, subscribe to it using
+ZeroMQ socket and publish what is received from
+this socket to a TCP Socket bind to ‘tcp_port’</p>
+<dl class="method">
+<dt id="cloud.daemons.tcpexposer.main.TCPExposer.__init__">
+<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">context</em>, <em class="sig-param">ipc_path</em>, <em class="sig-param">tcp_port</em><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main.TCPExposer.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Init method:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>Subscribe to IPC Socket</p></li>
+<li><p>Publish to TCP Socket</p></li>
+</ol>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>context</strong> – A zmq context</p></li>
+<li><p><strong>ipc_path</strong> – An absolute path to the ipc</p></li>
+<li><p><strong>tcp_port</strong> – A port used to bind the tcp socket</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="cloud.daemons.tcpexposer.main.TCPExposer.run">
+<code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main.TCPExposer.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>The run method pull the data from ‘self.sub’
+using zmq.Socket.recv() and send it to ‘self.pub’
+using zmq.Socket.send()</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.tcpexposer.main._join_threads">
+<code class="sig-prename descclassname">cloud.daemons.tcpexposer.main.</code><code class="sig-name descname">_join_threads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main._join_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Join all the TCPExpose threads.</p>
+<p>parameters:
+None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.tcpexposer.main._print_state">
+<code class="sig-prename descclassname">cloud.daemons.tcpexposer.main.</code><code class="sig-name descname">_print_state</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main._print_state" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take all the TCPExpose threads that are
+started and print their state.</p>
+<p>parameters:
+None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.tcpexposer.main._terminate_threads">
+<code class="sig-prename descclassname">cloud.daemons.tcpexposer.main.</code><code class="sig-name descname">_terminate_threads</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main._terminate_threads" title="Permalink to this definition">¶</a></dt>
+<dd><p>Terminate the job of all the TCPExpose
+threads and join them.</p>
+<p>parameters:
+None</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="cloud.daemons.tcpexposer.main.run">
+<code class="sig-prename descclassname">cloud.daemons.tcpexposer.main.</code><code class="sig-name descname">run</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#cloud.daemons.tcpexposer.main.run" title="Permalink to this definition">¶</a></dt>
+<dd><p>Take the configuration files ‘ipc_mapping.yaml’
+and ‘tcp_mapping’ contained at cloud/conf.
+Parse them and expose the channels requested
+in tcp_mapping.yaml.
+If you don’t want to expose in tcp a specific IPC Socket, just
+comment it in ‘tcp_mapping.yaml’ config file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>None</strong> – </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">Kraft</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../supervisor.html">Supervisor</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../daemons.html">Daemons</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">tcpexposer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="metric.html">metric</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../daemons.html">Daemons</a><ul>
+      <li>Previous: <a href="../daemons.html" title="previous chapter">Daemons</a></li>
+      <li>Next: <a href="metric.html" title="next chapter">metric</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Lucas Clerisse.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.1.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="../_sources/daemons/tcpexposer.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

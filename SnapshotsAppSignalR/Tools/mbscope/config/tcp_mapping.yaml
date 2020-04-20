@@ -1,0 +1,380 @@
+metrics:
+    CpuLoad:
+        ip: 172.16.30.71
+        port: 7990
+    CpuFreq:
+        ip: 172.16.30.71
+        port: 7991
+    VirtMemTot:
+        ip: 172.16.30.71
+        port: 7992
+    VirtMemAvail:
+        ip: 172.16.30.71
+        port: 7993
+    DiskUsage:
+        ip: 172.16.30.71
+        port: 7994
+sensors:
+    PositionV13:
+        ip: 172.16.30.71
+        port: 41000
+    PositionW13:
+        ip: 172.16.30.71
+        port: 41001
+    PositionV24:
+        ip: 172.16.30.71
+        port: 41002
+    PositionW24:
+        ip: 172.16.30.71
+        port: 41003
+    PositionV57:
+        ip: 172.16.30.71
+        port: 41004
+    PositionW57:
+        ip: 172.16.30.71
+        port: 41005
+    Positionz1:
+        ip: 172.16.30.71
+        port: 41006
+    PositionZ12:
+        ip: 172.16.30.71
+        port: 41007
+    CommandeV1:
+        ip: 172.16.30.71
+        port: 8008
+    CommandeV3:
+        ip: 172.16.30.71
+        port: 8009
+    CommandeV2:
+        ip: 172.16.30.71
+        port: 8010
+    CommandeV4:
+        ip: 172.16.30.71
+        port: 8011
+    CommandeV5:
+        ip: 172.16.30.71
+        port: 8012
+    CommandeV7:
+        ip: 172.16.30.71
+        port: 8013
+    CommandeW1:
+        ip: 172.16.30.71
+        port: 8014
+    CommandeW3:
+        ip: 172.16.30.71
+        port: 8015
+    CommandeW2:
+        ip: 172.16.30.71
+        port: 8016
+    CommandeW4:
+        ip: 172.16.30.71
+        port: 8017
+    CommandeW5:
+        ip: 172.16.30.71
+        port: 8018
+    CommandeW7:
+        ip: 172.16.30.71
+        port: 8019
+    Commandez1:
+        ip: 172.16.30.71
+        port: 8020
+    CommandeZ2:
+        ip: 172.16.30.71
+        port: 8021
+    TDCBit:
+        ip: 172.16.30.71
+        port: 8022
+    CurrentV1:
+        ip: 172.16.30.71
+        port: 8023
+    CurrentV3:
+        ip: 172.16.30.71
+        port: 8024
+    CurrentV2:
+        ip: 172.16.30.71
+        port: 8025
+    CurrentV4:
+        ip: 172.16.30.71
+        port: 8026
+    CurrentV5:
+        ip: 172.16.30.71
+        port: 8027
+    CurrentV7:
+        ip: 172.16.30.71
+        port: 8028
+    CurrentW1:
+        ip: 172.16.30.71
+        port: 8029
+    CurrentW3:
+        ip: 172.16.30.71
+        port: 8030
+    CurrentW2:
+        ip: 172.16.30.71
+        port: 8031
+    CurrentW4:
+        ip: 172.16.30.71
+        port: 8032
+    CurrentW5:
+        ip: 172.16.30.71
+        port: 8033
+    CurrentW7:
+        ip: 172.16.30.71
+        port: 8034
+    CurrentZ1:
+        ip: 172.16.30.71
+        port: 8035
+    CurrentZ2:
+        ip: 172.16.30.71
+        port: 8036
+    CurrentZ3:
+        ip: 172.16.30.71
+        port: 8037
+    CurrentZ4:
+        ip: 172.16.30.71
+        port: 8038
+    Rotation_Frequency_A:
+        ip: 172.16.30.71
+        port: 8039
+    Rotation_Frequency_B:
+        ip: 172.16.30.71
+        port: 8040
+    SPV_speed_A:
+        ip: 172.16.30.71
+        port: 8041
+    SPV_speed_B:
+        ip: 172.16.30.71
+        port: 8042
+    UnbalanceA13:
+        ip: 172.16.30.71
+        port: 8043
+    UnbalanceB13:
+        ip: 172.16.30.71
+        port: 8044
+    UnbalanceA24:
+        ip: 172.16.30.71
+        port: 8045
+    UnbalanceB24:
+        ip: 172.16.30.71
+        port: 8046
+    UnbalanceA57:
+        ip: 172.16.30.71
+        port: 8047
+    UnbalanceB57:
+        ip: 172.16.30.71
+        port: 8048
+    AxialHarmonic1A:
+        ip: 172.16.30.71
+        port: 8049
+    AxialHarmonic1B:
+        ip: 172.16.30.71
+        port: 8050
+    MachineTemp_1_A:
+        ip: 172.16.30.71
+        port: 8051
+    MachineTemp_2_A:
+        ip: 172.16.30.71
+        port: 8052
+    MachineTemp_3_A:
+        ip: 172.16.30.71
+        port: 8053
+    MachineTemp_4_A:
+        ip: 172.16.30.71
+        port: 8054
+    MachineTemp_5_A:
+        ip: 172.16.30.71
+        port: 8055
+    MachineTemp_6_A:
+        ip: 172.16.30.71
+        port: 8056
+    MachineTemp_7_A:
+        ip: 172.16.30.71
+        port: 8057
+    MachineTemp_8_A:
+        ip: 172.16.30.71
+        port: 8058
+    MachineTemp_1_B:
+        ip: 172.16.30.71
+        port: 8059
+    MachineTemp_2_B:
+        ip: 172.16.30.71
+        port: 8060
+    MachineTemp_3_B:
+        ip: 172.16.30.71
+        port: 8061
+    MachineTemp_4_B:
+        ip: 172.16.30.71
+        port: 8062
+    MachineTemp_5_B:
+        ip: 172.16.30.71
+        port: 8063
+    MachineTemp_6_B:
+        ip: 172.16.30.71
+        port: 8064
+    MachineTemp_7_B:
+        ip: 172.16.30.71
+        port: 8065
+    MachineTemp_8_B:
+        ip: 172.16.30.71
+        port: 8066
+    coilTempV1:
+        ip: 172.16.30.71
+        port: 8067
+    coilTempV3:
+        ip: 172.16.30.71
+        port: 8068
+    coilTempv2:
+        ip: 172.16.30.71
+        port: 8069
+    coilTempv4:
+        ip: 172.16.30.71
+        port: 8070
+    coilTempv5:
+        ip: 172.16.30.71
+        port: 8071
+    coilTempV7:
+        ip: 172.16.30.71
+        port: 8072
+    coilTempw1:
+        ip: 172.16.30.71
+        port: 8073
+    coilTempW3:
+        ip: 172.16.30.71
+        port: 8074
+    coilTempW2:
+        ip: 172.16.30.71
+        port: 8075
+    coilTempW4:
+        ip: 172.16.30.71
+        port: 8076
+    coilTempW5:
+        ip: 172.16.30.71
+        port: 8077
+    coilTempW7:
+        ip: 172.16.30.71
+        port: 8078
+    coilTempZI:
+        ip: 172.16.30.71
+        port: 8079
+    coilTempZ2:
+        ip: 172.16.30.71
+        port: 8080
+    coilTempz3:
+        ip: 172.16.30.71
+        port: 8081
+    coilTempZ4:
+        ip: 172.16.30.71
+        port: 8082
+    peakPositionv13:
+        ip: 172.16.30.71
+        port: 8083
+    peakPositionW13:
+        ip: 172.16.30.71
+        port: 8084
+    peakPositionV24:
+        ip: 172.16.30.71
+        port: 8085
+    peakPositionW24:
+        ip: 172.16.30.71
+        port: 8086
+    peakPositionV57:
+        ip: 172.16.30.71
+        port: 8087
+    peakPositionW57:
+        ip: 172.16.30.71
+        port: 8088
+    peakPositionz1:
+        ip: 172.16.30.71
+        port: 8089
+    peakPosition22:
+        ip: 172.16.30.71
+        port: 8090
+    PeakElongation_Rotor_SPV:
+        ip: 172.16.30.71
+        port: 8091
+    VDCMains:
+        ip: 172.16.30.71
+        port: 8092
+    VDCPA_V13:
+        ip: 172.16.30.71
+        port: 8093
+    VDCPA_W13:
+        ip: 172.16.30.71
+        port: 8094
+    VDCPA_V24:
+        ip: 172.16.30.71
+        port: 8095
+    VDCPA_W24:
+        ip: 172.16.30.71
+        port: 8096
+    VDCPA_V57:
+        ip: 172.16.30.71
+        port: 8097
+    VDCPA_W57:
+        ip: 172.16.30.71
+        port: 8098
+    VDCPA_Z12:
+        ip: 172.16.30.71
+        port: 8099
+    VDCPA_234:
+        ip: 172.16.30.71
+        port: 8100
+    AmplifierTempv13:
+        ip: 172.16.30.71
+        port: 8101
+    AmplifierTempW13:
+        ip: 172.16.30.71
+        port: 8102
+    AmplifierTempv24:
+        ip: 172.16.30.71
+        port: 8103
+    AmplifierTempW24:
+        ip: 172.16.30.71
+        port: 8104
+    AmplifierTempV57:
+        ip: 172.16.30.71
+        port: 8105
+    AmplifierTempW57:
+        ip: 172.16.30.71
+        port: 8106
+    AmplifierTempz12:
+        ip: 172.16.30.71
+        port: 8107
+    AmplifierTempz34:
+        ip: 172.16.30.71
+        port: 8108
+    ISO_Bear_A:
+        ip: 172.16.30.71
+        port: 8109
+    ISO_Det_A:
+        ip: 172.16.30.71
+        port: 8110
+    ISO_Bear_B:
+        ip: 172.16.30.71
+        port: 8111
+    ISO_Det_B:
+        ip: 172.16.30.71
+        port: 8112
+    RadialHarmonicN2A13:
+        ip: 172.16.30.71
+        port: 8113
+    RadialHarmonicN2B13:
+        ip: 172.16.30.71
+        port: 8114
+    RadialHarmonicN2A24:
+        ip: 172.16.30.71
+        port: 8115
+    RadialHarmonicN2824:
+        ip: 172.16.30.71
+        port: 8116
+    RadialHarmonicN2A57:
+        ip: 172.16.30.71
+        port: 8117
+    RadialHarmonicN2B57:
+        ip: 172.16.30.71
+        port: 8118
+    AxialHarmonicN2A:
+        ip: 172.16.30.71
+        port: 8119
+    AxialHarmonicN2B:
+        ip: 172.16.30.71
+        port: 8120

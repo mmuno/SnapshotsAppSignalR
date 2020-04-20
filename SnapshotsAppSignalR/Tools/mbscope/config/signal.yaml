@@ -1,0 +1,35 @@
+options:
+  positions:
+      - PositionV13
+      - PositionW13
+      # - PositionV24
+      # - PositionW24
+      # - PositionV57
+      # - PositionW57
+      # - Positionz1
+      # - PositionZ12
+  #temperatures:
+  #    - AmplifierTempv13
+  #     - AmplifierTempW13
+colors:
+  PositionV13: "#0f58d6"
+  PositionW13: "#29a638"
+  PositionV24: "#27308b"
+  PositionW24: "#27308b"
+  PositionV57: "#27308b"
+  PositionW57: "#27308b"
+  Positionz1: "#27308b"
+  PositionZ12: "#27308b"
+  AmplifierTempv13: "#ff1744"
+  AmplifierTempW13: "#ff1744"
+scales:
+  PositionV13: [-400, 400]
+  PositionW13: [-400, 400]
+  PositionV24: [-400, 400]
+  PositionW24: [-400, 400]
+  PositionV57: [-400, 400]
+  PositionW57: [-400, 400]
+  Positionz1: [-833, 833]
+  PositionZ12: [-8333, 8333]
+  AmplifierTempv13: [0, 100]
+  AmplifierTempW13: [0, 100]

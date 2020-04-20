@@ -1,0 +1,15 @@
+.bk .bk-tab {
+    color: #0072BC;
+}
+
+.bk .select_class {
+    position: absolute;
+    display: block;
+    width: 150px;
+}
+
+.signals_class {
+    position: absolute;
+    display: block;
+    top: 50px;
+}

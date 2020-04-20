@@ -1,0 +1,46 @@
+# This YAML file contains the daemons
+# configuration.
+#
+#
+
+
+############ SENSORS ############
+
+sensors:
+        start: true
+        waitfor: 0.5
+        critical: true
+        type: native
+        args: ['sensor']
+        directory: cloud/daemons/sensor
+
+compress:
+        start: false
+        waitfor: 0.5
+        critical: false
+        type: native
+        args: ['compress']
+        directory: cloud/daemons/compress
+
+tcpexposer:
+        start: true
+        waitfor: 0.5
+        critical: false
+        type: python
+        module: cloud.daemons.tcpexposer.main
+
+metrics:
+        start: false
+        waitfor: 0.5
+        critical: false
+        type: python
+        module: cloud.daemons.metric.main
+
+dataset:
+        start: false
+        waitfor: 0.5
+        critical: false
+        type: python
+        module: cloud.daemons.dataset_builder.main
+
+

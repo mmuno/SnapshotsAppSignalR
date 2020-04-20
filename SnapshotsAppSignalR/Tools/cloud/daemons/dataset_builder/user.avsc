@@ -1,0 +1,9 @@
+{
+    "namespace": "example.avro",
+    "type": "record",
+    "name": "dataset_builder",
+    "fields": [
+        {"name": "name", "type": "string"},
+        {"name": "data",  "type": "array"}
+    ]
+}

@@ -1,0 +1,75 @@
+Before use: 
+===========
+install of avro cpp 1.9.1
+
+Error in build.log:
+==================
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/parser.o src/parser.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/network/udp_client_server.o src/network/udp_client_server.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/gci.o src/gci/gci.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/response/response.o src/gci/response/response.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/response/response_snapshotv2.o src/gci/response/response_snapshotv2.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/response/data_vectorizer.o src/gci/response/data_vectorizer.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/query/query.o src/gci/query/query.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/gci/query/query_snapshotv2.o src/gci/query/query_snapshotv2.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o ../../common/cpp/timer/src/timer.o ../../common/cpp/timer/src/timer.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o ../../common/cpp/log/src/logs.o ../../common/cpp/log/src/logs.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o ../../common/cpp/configloader/src/conf_loader.o ../../common/cpp/configloader/src/conf_loader.cpp
+src/gci/response/data_vectorizer.cpp: In function ‘int save_avro_in_file(std::vector<c::channels>)’:
+src/gci/response/data_vectorizer.cpp:134:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+src/gci/response/data_vectorizer.cpp: In member function ‘void GciResponseSnapshotV2::GciVectorizer::vector_into_havro(const std::vector<std::vector<short unsigned int> >&, int)’:
+src/gci/response/data_vectorizer.cpp:326:39: warning: ‘bool zmq::detail::socket_base::send(zmq::message_t&, int)’ is deprecated: from 4.3.1, use send taking message_t and send_flags [-Wdeprecated-declarations]
+         _publications[x]->send(message);
+                                       ^
+In file included from include/gci/response/response_snapshotv2.h:11:0,
+                 from src/gci/response/data_vectorizer.cpp:2:
+/usr/local/include/zmq.hpp:1191:10: note: declared here
+     bool send(message_t &msg_,
+          ^~~~
+src/gci/response/data_vectorizer.cpp: In member function ‘void GciResponseSnapshotV2::GciVectorizer::vector_into_shm(const std::vector<std::vector<short unsigned int> >&, int)’:
+src/gci/response/data_vectorizer.cpp:363:33: warning: ‘bool zmq::detail::socket_base::send(zmq::message_t&, int)’ is deprecated: from 4.3.1, use send taking message_t and send_flags [-Wdeprecated-declarations]
+   _publications[x]->send(message);
+                                 ^
+In file included from include/gci/response/response_snapshotv2.h:11:0,
+                 from src/gci/response/data_vectorizer.cpp:2:
+/usr/local/include/zmq.hpp:1191:10: note: declared here
+     bool send(message_t &msg_,
+          ^~~~
+g++ src/parser.o src/network/udp_client_server.o src/gci/gci.o src/gci/response/response.o src/gci/response/response_snapshotv2.o src/gci/response/data_vectorizer.o src/gci/query/query.o src/gci/query/query_snapshotv2.o ../../common/cpp/timer/src/timer.o ../../common/cpp/log/src/logs.o ../../common/cpp/configloader/src/conf_loader.o -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include -lpthread -lyaml-cpp -lrt -lzmq -lavrocpp -o sensor
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/core.o src/core.cpp
+g++  -std=c++17 -Wall -Wextra -Iincludes -O3 -Iinclude -Iinclude/gci -Iinclude/gci/query -Iinclude/gci/response -Iinclude/network -I../../common/cpp/timer/include -I../../common/cpp/log/include -I../../common/cpp/configloader/include -I../../common/cpp/exception/include  -c -o src/compression.o src/compression.cpp
+src/core.cpp: In member function ‘bool Engine::Core::compress(void*, size_t)’:
+src/core.cpp:40:12: warning: unused variable ‘test’ [-Wunused-variable]
+  uint16_t *test = (uint16_t*)buff;
+            ^~~~
+src/core.cpp: In member function ‘void Engine::Core::run()’:
+src/core.cpp:54:30: error: no matching function for call to ‘zmq::socket_t::recv(zmq::message_t*)’
+    subscription->recv(&update);
+                              ^
+In file included from include/core.h:5:0,
+                 from src/core.cpp:5:
+/usr/local/include/zmq.hpp:1254:12: note: candidate: size_t zmq::detail::socket_base::recv(void*, size_t, int)
+     size_t recv(void *buf_, size_t len_, int flags_ = 0)
+            ^~~~
+/usr/local/include/zmq.hpp:1254:12: note:   candidate expects 3 arguments, 1 provided
+/usr/local/include/zmq.hpp:1267:10: note: candidate: bool zmq::detail::socket_base::recv(zmq::message_t*, int)
+     bool recv(message_t *msg_, int flags_
+          ^~~~
+/usr/local/include/zmq.hpp:1267:10: note:   candidate expects 2 arguments, 1 provided
+/usr/local/include/zmq.hpp:1282:34: note: candidate: zmq::detail::recv_buffer_result_t zmq::detail::socket_base::recv(zmq::mutable_buffer, zmq::recv_flags)
+     detail::recv_buffer_result_t recv(mutable_buffer buf,
+                                  ^~~~
+/usr/local/include/zmq.hpp:1282:34: note:   no known conversion for argument 1 from ‘zmq::message_t*’ to ‘zmq::mutable_buffer’
+/usr/local/include/zmq.hpp:1296:27: note: candidate: zmq::detail::recv_result_t zmq::detail::socket_base::recv(zmq::message_t&, zmq::recv_flags)
+     detail::recv_result_t recv(message_t &msg, recv_flags flags = recv_flags::none)
+                           ^~~~
+/usr/local/include/zmq.hpp:1296:27: note:   no known conversion for argument 1 from ‘zmq::message_t*’ to ‘zmq::message_t&’
+<builtin>: recipe for target 'src/core.o' failed
+make: *** [src/core.o] Error 1
+
+
+Error in run sensor: 
+====================
+sensor: error while loading shared libraries: libavrocpp.so.1.9.1.0: cannot open shared object file: No such file or directory

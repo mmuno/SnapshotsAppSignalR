@@ -1,0 +1,29 @@
+#   shared memory allocation values
+#
+#   Nx = nunber of channel for x frequency, Sx = number sample for x frequency
+#   header = (Nx0 + Nx1 + Nx2) * 7
+#
+#####################################################################################################
+#   sm1 = ((Nx0 * Sx0) + (Nx1 * Sx1) + (Nx2 * Sx2))...                                              #
+#   ... * 20 (for 1 sec) * 60 (for 1 min) * x (x minutes) * sizeof(type) (for example 4 for float)  #
+#                                                                                                   #
+#   example for 23 channels 14khz, 16 channels 2khz, 82 channels 1khz on 1 sec type float           #
+#   ((23 * 700) + (16 * 100) + (82 * 50)) * 20 * 4 + (16*3)                                         #
+#                                                                                                   #
+#####################################################################################################
+
+#   warning: you can change the shm names but keep in mind that the biggest shm will always be considered
+#   as the raw data and the smallest will always be the monitoring shm. (because we sort the shms by size to assign the data)
+
+skfcloud_raw : 1831248
+skfcloud_computed : 600000
+skfcloud_monitoring : 1000
+
+#   path towards the submodules (submodules available: parser, engine, cloud, monitoring)
+#   port you want to communicate with them
+
+parser : ./bin/parser
+engine : ./bin/engine
+#cloud : ./bin/cloud
+
+port_mbscope : 9000
