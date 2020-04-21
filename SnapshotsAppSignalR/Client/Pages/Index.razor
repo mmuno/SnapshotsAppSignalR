@@ -1,6 +1,5 @@
 ﻿@page "/"
 @using System.Threading
-@using Blazorise.Charts
 @using Microsoft.AspNetCore.SignalR.Client
 @inject IJSRuntime JsRuntime
 @inject NavigationManager NavigationManager
@@ -15,8 +14,20 @@
 
 Snapshots Count: <strong>@_ssCount</strong>
 
-<LineChart @ref="_lineChart" TItem="double" />
-
+<div class="control-section col-md-8">
+    <SfChart EnableCanvas="true" @ref="_chartInstance">
+        <ChartEvents Loaded="@ChartLoaded" Load="ChartLoad"></ChartEvents>
+        <ChartPrimaryXAxis>
+            <ChartAxisMajorGridLines Width="0"></ChartAxisMajorGridLines>
+        </ChartPrimaryXAxis>
+        <ChartLegendSettings Visible="false"></ChartLegendSettings>
+        <ChartSeriesCollection>
+            <ChartSeries Name="Series" XName="@nameof(LineChartData.XValue)" YName="@nameof(LineChartData.YValue)" DataSource="@_dataChart">
+                <ChartSeriesAnimation Enable="false"></ChartSeriesAnimation>
+            </ChartSeries>
+        </ChartSeriesCollection>
+    </SfChart>
+</div>
 
 @code {
     // ReSharper disable UnusedMember.Local
@@ -25,106 +36,7 @@ Snapshots Count: <strong>@_ssCount</strong>
     private int _ssCount;
     CancellationTokenSource _cancellationTokenSource;
 
-    LineChart<double> _lineChart = new LineChart<double>();
     List<double> _plotData = new List<double>();
-
-    LineChartOptions _options = new LineChartOptions
-    {
-        Legend = new Legend
-        {
-            Display = false
-        },
-        Animation = new Animation()
-        {
-            Duration = 0
-        },
-        SpanGaps = false,
-        Tooltips = new Tooltips()
-        {
-            Enabled = false
-        },
-        Scales = new Scales()
-        {
-            YAxes = new List<Axe>()
-            {
-                new Axe
-                {
-                    Display = false,
-                    Ticks = new AxeTicks()
-                    {
-                        BeginAtZero = false,
-                        Display = true,
-                        Major = new AxeMajorTick
-                        {
-                            Enabled = true
-                        },
-                        Minor = new AxeMinorTick()
-                    },
-                    GridLines = new AxeGridLines()
-                    {
-                        TickMarkLength = 2
-                    }
-                }
-            },
-            XAxes = new List<Axe>()
-            {
-                new Axe
-                {
-                    Display = false,
-                    Ticks = new AxeTicks()
-                    {
-                        BeginAtZero = false,
-                        Display = true,
-                        Major = new AxeMajorTick
-                        {
-                            Enabled = true
-                        },
-                        Minor = new AxeMinorTick()
-                    },
-                    GridLines = new AxeGridLines()
-                    {
-                        TickMarkLength = 2
-                    }
-                }
-            }
-        }
-    };
-
-    protected override async Task OnAfterRenderAsync(bool firstRender)
-    {
-        if (firstRender)
-        {
-            await HandleRedraw();
-        }
-    }
-
-    async Task HandleRedraw()
-    {
-        // _lineChart.SetOptions(_options);
-
-        _lineChart.Clear();
-        _lineChart.AddLabel(_labels.ToArray());
-        _lineChart.AddDataSet(GetLineChartDataSet());
-        await _lineChart.Update();
-    }
-
-    LineChartDataset<double> GetLineChartDataSet()
-    {
-        return new LineChartDataset<double>
-        {
-            Label = "# of randoms",
-            Data = _plotData,
-            BackgroundColor = _backgroundColors,
-            BorderColor = _borderColors,
-            Fill = false,
-            PointRadius = 2,
-            BorderDash = new List<int>()
-        };
-    }
-
-    List<string> _labels = new List<string>();
-    readonly List<string> _backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
-    readonly List<string> _borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
     protected override void OnInitialized()
     {
@@ -166,16 +78,8 @@ Snapshots Count: <strong>@_ssCount</strong>
             _plotData.Clear();
 
             // Update Y axis
-            _plotData = ss.Select(ssElement => (double)ssElement).ToList();
-
-            // Update labels
-            _labels = new List<string>();
-            for (var i = 0; i < ss.Length; i++)
-            {
-                _labels.Add(i.ToString());
-            }
-
-            await HandleRedraw();
+            LoadChart(ss);
+            await Task.Delay(5);
         }
         _ssCount = 0;
     }
@@ -189,5 +93,72 @@ Snapshots Count: <strong>@_ssCount</strong>
     public bool IsConnected =>
         _ssHubConnection.State == HubConnectionState.Connected;
 
-    // ReSharper restore UnusedMember.Local
+
+    SfChart _chartInstance;
+    string Data = "";
+    public class LineChartData
+    {
+        public double XValue { get; set; }
+        public double YValue { get; set; }
+    }
+
+    readonly List<LineChartData> _dataChart = new List<LineChartData>();
+    DateTime _start;
+    DateTime _end;
+    double _value = 0;
+    bool _findPerformance;
+
+    void LoadChart(int[] data)
+    {
+        _dataChart.Clear();
+        _start = DateTime.Now;
+        for (var i = 0; i < data.Length; i++)
+        {
+            _dataChart.Add(new LineChartData() { XValue = i, YValue = data[i] });
+        }
+
+        _chartInstance.Refresh();
+        _findPerformance = false;
+    }
+
+    void ChartLoaded(ILoadedEventArgs args)
+    {
+        _end = DateTime.Now;
+        if (_findPerformance)
+        {
+            var diff = _end - _start;
+            var timeValue = ((int)diff.TotalMilliseconds).ToString();
+            var timeString = "Time Taken     " + timeValue + " ms";
+            Data = timeString;
+        }
+    }
+    string CurrentUri;
+    void ChartLoad(ILoadedEventArgs Args)
+    {
+        CurrentUri = NavigationManager.Uri;
+        if (CurrentUri.IndexOf("material") > -1)
+        {
+            Args.Theme = ChartTheme.Material;
+        }
+        else if (CurrentUri.IndexOf("fabric") > -1)
+        {
+            Args.Theme = ChartTheme.Fabric;
+        }
+        else if (CurrentUri.IndexOf("bootstrap4") > -1)
+        {
+            Args.Theme = ChartTheme.Bootstrap4;
+        }
+        else if (CurrentUri.IndexOf("bootstrap") > -1)
+        {
+            Args.Theme = ChartTheme.Bootstrap;
+        }
+        else if (CurrentUri.IndexOf("highcontrast") > -1)
+        {
+            Args.Theme = ChartTheme.HighContrast;
+        }
+        else
+        {
+            Args.Theme = ChartTheme.Bootstrap4;
+        }
+    }    // ReSharper restore UnusedMember.Local
 }

@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Text;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
+using Syncfusion.Blazor;
 
 namespace SnapshotsAppSignalR.Client
 {
@@ -15,7 +16,7 @@ namespace SnapshotsAppSignalR.Client
             builder.RootComponents.Add<App>("app");
 
             builder.Services.AddBaseAddressHttpClient();
-
+            builder.Services.AddSyncfusionBlazor();
             await builder.Build().RunAsync();
         }
     }
