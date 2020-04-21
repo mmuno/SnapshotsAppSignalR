@@ -106,6 +106,7 @@ Snapshots Count: <strong>@_ssCount</strong>
         _lineChart.AddLabel(_labels.ToArray());
         _lineChart.AddDataSet(GetLineChartDataSet());
         await _lineChart.Update();
+        await Task.Delay(5);
     }
 
     LineChartDataset<double> GetLineChartDataSet()
