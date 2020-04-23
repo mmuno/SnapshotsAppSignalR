@@ -29,11 +29,11 @@
 <input type="checkbox" id="positionW13" @onchange="eventArgs => { CheckboxClicked(PositionW13, eventArgs.Value);}" />
 <label for="positionW13">Position W13</label>
 
-<input type="checkbox" id="positionW24" @onchange="eventArgs => { CheckboxClicked(PositionV24, eventArgs.Value);}" />
-<label for="positionV13">Position V24</label>
+<input type="checkbox" id="positionW24" @onchange="eventArgs => { CheckboxClicked(PositionW24, eventArgs.Value);}" />
+<label for="positionW24">Position W24</label>
 
 <input type="checkbox" id="positionZ12" @onchange="eventArgs => { CheckboxClicked(PositionZ12, eventArgs.Value);}" />
-<label for="positionV13">Position Z12</label>
+<label for="positionZ12">Position Z12</label>
 
 <p>
     <button @onclick="StopSnapshotsStream" class="btn btn-primary">Stop Single Snapshots</button>
@@ -41,7 +41,7 @@
 
 Snapshots Count: <strong>@_ssCount</strong>
 
-<LineChart @ref="_lineChart" TItem="double" />
+<LineChart @ref="_lineChart" TItem="short" />
 
 
 @code {
@@ -55,7 +55,7 @@ Snapshots Count: <strong>@_ssCount</strong>
     const int PositionZ12 = 4;
 
     //, Color.Blue, Color.Purple, Color.Green, Color.Black,
-    readonly List<string> _backgroundPlotColors = new List<string>
+    readonly string[] _backgroundPlotColors = 
     {
         ChartColor.FromRgba(255, 0, 0, 0.2f),
         ChartColor.FromRgba(0, 255, 0, 0.2f),
@@ -64,7 +64,7 @@ Snapshots Count: <strong>@_ssCount</strong>
         ChartColor.FromRgba(255, 255, 255, 0.2f)
     };
 
-    readonly List<string> _borderPlotColors= new List<string>
+    readonly string[] _borderPlotColors = 
     {
         ChartColor.FromRgba(255, 0, 0, 0.5f),
         ChartColor.FromRgba(0, 255, 0, 0.5f),
@@ -79,8 +79,8 @@ Snapshots Count: <strong>@_ssCount</strong>
     private HubConnection _ssHubConnection;
 
     // Chart variables
-    LineChart<double> _lineChart = new LineChart<double>();
-    List<LineChartDataset<double>> _lineChartDataSetList;
+    LineChart<short> _lineChart = new LineChart<short>();
+    List<LineChartDataset<short>> _lineChartDataSetList;
     List<string> _labels = new List<string>();
 
     // Ui variables
@@ -102,17 +102,17 @@ Snapshots Count: <strong>@_ssCount</strong>
         // Chart Configuration
 #if DEBUG
         if (!_firstRender)
-            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Updating options");
+            await JsRuntime.InvokeAsync<string>("console.log", "Redraw - Updating options");
 #endif
         _lineChart.OptionsJsonString = "{\"elements\":{\"line\":{\"tension\": false}}," +
                                        "\"legend\":{\"display\": false}," +
                                        "\"animation\": {\"duration\": 0}," +
                                        "\"scales\": " +
-                                       "{\"yAxes\": [{\"display\": true,\"ticks\": {\"max\": 1000,\"min\": -1000}}]}}"; //Disable animation
+                                       "{\"yAxes\": [{\"display\": true,\"ticks\": {\"max\": 1500,\"min\": -1500}}]}}"; //Disable animation
 
 #if DEBUG
         if (!_firstRender)
-            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Clear chart");
+            await JsRuntime.InvokeAsync<string>("console.log", "Redraw - Clear chart");
 #endif
         _lineChart.Clear();
 
@@ -128,7 +128,7 @@ Snapshots Count: <strong>@_ssCount</strong>
         {
 #if DEBUG
             if (!_firstRender)
-                await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Default labels");
+                await JsRuntime.InvokeAsync<string>("console.log", "Redraw - Default labels");
 #endif
             _labels = new List<string> {"1", "2", "3", "4", "5", "6" };
             _lineChart.AddLabel(_labels.ToArray());
@@ -149,29 +149,29 @@ Snapshots Count: <strong>@_ssCount</strong>
         {
 #if DEBUG
             if (!_firstRender)
-                await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Default data");
+                await JsRuntime.InvokeAsync<string>("console.log", "Redraw - Default data");
 #endif
-            var data = new List<double> {100.0, 200.0, 300.0, 400.0, 500.0, 600.0};
+            var data = new List<short> {100, 200, 300, 400, 500, 600};
             _lineChart.AddDataSet(GetLineChartDataSet(data, 1));
-            data = new List<double> { 600.0, 500.0, 400.0, 300.0, 200.0, 100.0 };
+            data = new List<short> { 600, 500, 400, 300, 200, 100 };
             _lineChart.AddDataSet(GetLineChartDataSet(data, 2));
         }
 
 #if DEBUG
         if (!_firstRender)
-            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - update");
+            await JsRuntime.InvokeAsync<string>("console.log", "Redraw - update");
 #endif
         await _lineChart.Update();
     }
 
-    LineChartDataset<double> GetLineChartDataSet(List<double> data, int idx)
+    LineChartDataset<short> GetLineChartDataSet(List<short> data, int idx)
     {
-        return new LineChartDataset<double>
+        return new LineChartDataset<short>
         {
             Label = "# of randoms",
             Data = data,
-            BackgroundColor = _backgroundPlotColors.GetRange(idx,idx),
-            BorderColor = _borderPlotColors.GetRange(idx, idx),
+            BackgroundColor = new List<string> { _backgroundPlotColors[idx] },
+            BorderColor = new List<string> { _borderPlotColors[idx] },
             Fill = false,
             PointRadius = 2,
             BorderDash = new List<int>()
@@ -185,12 +185,14 @@ Snapshots Count: <strong>@_ssCount</strong>
             .WithUrl(NavigationManager.ToAbsoluteUri("/snapshotsHub"))
             .Build();
 
+        /*
         _ssHubConnection.On<int[]>("ReceiveMessage", (ss) =>
         {
             JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}");
             _ssCount++;
             StateHasChanged();
         });
+        */
 
         _ssHubConnection.StartAsync();
     }
@@ -213,7 +215,7 @@ Snapshots Count: <strong>@_ssCount</strong>
 #if DEBUG
         await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshotsStream");
 #endif
-        var ssStream = _ssHubConnection.StreamAsync<int[]>("SnapshotsStream", timeSpan, selectedChannels, _cancellationTokenSource.Token);
+        var ssStream = _ssHubConnection.StreamAsync<short[]>("SnapshotsStream", timeSpan, selectedChannels, _cancellationTokenSource.Token);
 
         // Check stream
         if (ssStream == null)
@@ -263,22 +265,22 @@ Snapshots Count: <strong>@_ssCount</strong>
         }
     }
 
-    public void UpdateLineChartDataSet(int[] ss, int nSamples, int nChannels)
+    public void UpdateLineChartDataSet(short[] ss, int nSamples, int nChannels)
     {
         // Organize channel data
-        _lineChartDataSetList = new List<LineChartDataset<double>>();
+        _lineChartDataSetList = new List<LineChartDataset<short>>();
         for (var i = 0; i < nChannels; i++)
         {
-            var chData = ss.Skip(i* nSamples).Take(nSamples).Select(x => (double)x).ToList();
+            var chData = ss.Skip(i* nSamples).Take(nSamples).ToList();
 #if DEBUG
             JsRuntime.InvokeAsync<string>("console.log", $@"Ss Adding nSamples = {chData.Count}");
 #endif
-            var lineChartDataSet = new LineChartDataset<double>
+            var lineChartDataSet = new LineChartDataset<short>
             {
                 Label = "Channel i",
                 Data = chData,
-                BackgroundColor = _backgroundPlotColors.GetRange(i, i),
-                BorderColor = _borderPlotColors.GetRange(i, i),
+                BackgroundColor = new List<string> {_backgroundPlotColors[i]},
+                BorderColor = new List<string> {_borderPlotColors[i]},
                 Fill = false,
                 PointRadius = 2,
                 BorderDash = new List<int>()

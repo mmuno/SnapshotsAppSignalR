@@ -29,7 +29,7 @@ namespace SnapshotsAppSignalR.Server.Hubs
         /// <param name="selectedChannels">Selected Channels</param>
         /// <param name="cancellationToken">Cancellation token</param>
         /// <returns></returns>
-        public async IAsyncEnumerable<int[]> SnapshotsStream(
+        public async IAsyncEnumerable<short[]> SnapshotsStream(
             int timeSpan,
             HashSet<int> selectedChannels,
             [EnumeratorCancellation]
@@ -48,14 +48,14 @@ namespace SnapshotsAppSignalR.Server.Hubs
             while (true)
             {
                 var index0 = 0;
-                var snapshotsPacket = new int[selectedChannels.Count * nSamples];
+                var snapshotsPacket = new short[selectedChannels.Count * nSamples];
                 cancellationToken.ThrowIfCancellationRequested();
                 foreach (var channel in selectedChannels)
                 {
                     Debug.WriteLine($"Sending Snapshot {ssCount}, timespan {timeSpan}, nSamples {nSamples}, channelId {channel}");
                     for (int i = 0; i < nSamples; i++)
                     {
-                        snapshotsPacket[index0] = randNum.Next(-1000, 1000);
+                        snapshotsPacket[index0] = (short)randNum.Next(-1000, 1000);
                         index0++;
                     }
                 }
