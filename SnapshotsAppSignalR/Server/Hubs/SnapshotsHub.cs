@@ -22,19 +22,46 @@ namespace SnapshotsAppSignalR.Server.Hubs
             await Task.Delay(50);
         }
 
+        /// <summary>
+        /// Starts streaming snapshots signal
+        /// </summary>
+        /// <param name="timeSpan">Time Span in milliseconds</param>
+        /// <param name="selectedChannels">Selected Channels</param>
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns></returns>
         public async IAsyncEnumerable<int[]> SnapshotsStream(
+            int timeSpan,
+            HashSet<int> selectedChannels,
             [EnumeratorCancellation]
             CancellationToken cancellationToken)
         {
+            if (selectedChannels.Count == 0)
+            {
+                Debug.WriteLine($"No Channels selected");
+                yield return null;
+            }
+
+
+            var nSamples = timeSpan * 14;
             var randNum = new Random();
             var ssCount = 0;
             while (true)
             {
-                Debug.WriteLine($"Sending Snapshot {ssCount}");
+                var index0 = 0;
+                var snapshotsPacket = new int[selectedChannels.Count * nSamples];
                 cancellationToken.ThrowIfCancellationRequested();
-                var random = Enumerable.Repeat(0, 700).Select(ii => randNum.Next(-1000, 1000));
-                yield return random.ToArray();
-                await Task.Delay(50, cancellationToken);
+                foreach (var channel in selectedChannels)
+                {
+                    Debug.WriteLine($"Sending Snapshot {ssCount}, timespan {timeSpan}, nSamples {nSamples}, channelId {channel}");
+                    for (int i = 0; i < nSamples; i++)
+                    {
+                        snapshotsPacket[index0] = randNum.Next(-1000, 1000);
+                        index0++;
+                    }
+                }
+
+                yield return snapshotsPacket;
+                await Task.Delay(timeSpan, cancellationToken);
                 ssCount++;
             }
             // ReSharper disable once IteratorNeverReturns

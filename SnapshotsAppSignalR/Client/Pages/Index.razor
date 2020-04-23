@@ -7,9 +7,35 @@
 
 <h1>Snapshots with SignalR</h1>
 
+<Dropdown @ref="_timespanDropdown">
+    <DropdownToggle Color="Color.Primary">
+        Start Snapshots
+    </DropdownToggle>
+    <DropdownMenu>
+        <DropdownItem Clicked="@Request50ms">50ms</DropdownItem>
+        <DropdownDivider />
+        <DropdownItem Clicked="@Request1000ms">1000ms</DropdownItem>
+        <DropdownDivider />
+        <DropdownItem Clicked="@Request5000ms">5000ms</DropdownItem>
+    </DropdownMenu>
+</Dropdown>
+
+<input type="checkbox" id="positionV13" @onchange="eventArgs => { CheckboxClicked(PositionV13, eventArgs.Value);}" />
+<label for="positionV13">Position V13</label>
+
+<input type="checkbox" id="positionV24" @onchange="eventArgs => { CheckboxClicked(PositionV24, eventArgs.Value);}" />
+<label for="positionV24">Position V24</label>
+
+<input type="checkbox" id="positionW13" @onchange="eventArgs => { CheckboxClicked(PositionW13, eventArgs.Value);}" />
+<label for="positionW13">Position W13</label>
+
+<input type="checkbox" id="positionW24" @onchange="eventArgs => { CheckboxClicked(PositionV24, eventArgs.Value);}" />
+<label for="positionV13">Position V24</label>
+
+<input type="checkbox" id="positionZ12" @onchange="eventArgs => { CheckboxClicked(PositionZ12, eventArgs.Value);}" />
+<label for="positionV13">Position Z12</label>
+
 <p>
-    <input @bind="_snapshotId" placeholder="Type channel Id" />
-    <button @onclick="StartSnapshotsStream" class="btn btn-primary">Start Single Snapshots</button>
     <button @onclick="StopSnapshotsStream" class="btn btn-primary">Stop Single Snapshots</button>
 </p>
 
@@ -20,78 +46,51 @@ Snapshots Count: <strong>@_ssCount</strong>
 
 @code {
     // ReSharper disable UnusedMember.Local
-    private HubConnection _ssHubConnection;
-    private int _snapshotId = 0;
-    private int _ssCount;
-    CancellationTokenSource _cancellationTokenSource;
 
-    LineChart<double> _lineChart = new LineChart<double>();
-    List<double> _plotData = new List<double>();
+    // Position ids
+    const int PositionV13 = 0;
+    const int PositionW13 = 1;
+    const int PositionV24 = 2;
+    const int PositionW24 = 3;
+    const int PositionZ12 = 4;
 
-    LineChartOptions _options = new LineChartOptions
+    //, Color.Blue, Color.Purple, Color.Green, Color.Black,
+    readonly List<string> _backgroundPlotColors = new List<string>
     {
-        Legend = new Legend
-        {
-            Display = false
-        },
-        Animation = new Animation()
-        {
-            Duration = 0
-        },
-        SpanGaps = false,
-        Tooltips = new Tooltips()
-        {
-            Enabled = false
-        },
-        Scales = new Scales()
-        {
-            YAxes = new List<Axe>()
-            {
-                new Axe
-                {
-                    Display = false,
-                    Ticks = new AxeTicks()
-                    {
-                        BeginAtZero = false,
-                        Display = true,
-                        Major = new AxeMajorTick
-                        {
-                            Enabled = true
-                        },
-                        Minor = new AxeMinorTick()
-                    },
-                    GridLines = new AxeGridLines()
-                    {
-                        TickMarkLength = 2
-                    }
-                }
-            },
-            XAxes = new List<Axe>()
-            {
-                new Axe
-                {
-                    Display = false,
-                    Ticks = new AxeTicks()
-                    {
-                        BeginAtZero = false,
-                        Display = true,
-                        Major = new AxeMajorTick
-                        {
-                            Enabled = true
-                        },
-                        Minor = new AxeMinorTick()
-                    },
-                    GridLines = new AxeGridLines()
-                    {
-                        TickMarkLength = 2
-                    }
-                }
-            }
-        }
+        ChartColor.FromRgba(255, 0, 0, 0.2f),
+        ChartColor.FromRgba(0, 255, 0, 0.2f),
+        ChartColor.FromRgba(0, 0, 255, 0.2f),
+        ChartColor.FromRgba(128, 0, 128, 0.2f),
+        ChartColor.FromRgba(255, 255, 255, 0.2f)
     };
 
+    readonly List<string> _borderPlotColors= new List<string>
+    {
+        ChartColor.FromRgba(255, 0, 0, 0.5f),
+        ChartColor.FromRgba(0, 255, 0, 0.5f),
+        ChartColor.FromRgba(0, 0, 255, 0.5f),
+        ChartColor.FromRgba(128, 0, 128, 0.5f),
+        ChartColor.FromRgba(255, 255, 255, 0.5f)
+    };
+
+    //Stream variables
+    CancellationTokenSource _cancellationTokenSource;
+    private int _ssCount;
+    private HubConnection _ssHubConnection;
+
+    // Chart variables
+    LineChart<double> _lineChart = new LineChart<double>();
+    List<LineChartDataset<double>> _lineChartDataSetList;
+    List<string> _labels = new List<string>();
+
+    // Ui variables
+    Dropdown _timespanDropdown;
+    readonly HashSet<int> _selectedChannelSet= new HashSet<int>();
+
+    bool _firstRender = true;
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
+        _firstRender = firstRender;
         if (firstRender)
         {
             await HandleRedraw();
@@ -100,32 +99,84 @@ Snapshots Count: <strong>@_ssCount</strong>
 
     async Task HandleRedraw()
     {
-        // _lineChart.SetOptions(_options);
+        // Chart Configuration
+#if DEBUG
+        if (!_firstRender)
+            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Updating options");
+#endif
+        _lineChart.OptionsJsonString = "{\"elements\":{\"line\":{\"tension\": false}}," +
+                                       "\"legend\":{\"display\": false}," +
+                                       "\"animation\": {\"duration\": 0}," +
+                                       "\"scales\": " +
+                                       "{\"yAxes\": [{\"display\": true,\"ticks\": {\"max\": 1000,\"min\": -1000}}]}}"; //Disable animation
 
+#if DEBUG
+        if (!_firstRender)
+            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Clear chart");
+#endif
         _lineChart.Clear();
-        _lineChart.AddLabel(_labels.ToArray());
-        _lineChart.AddDataSet(GetLineChartDataSet());
+
+        if (_labels != null && _labels.Count > 0)
+        {
+#if DEBUG
+            if (!_firstRender)
+                await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Add labels = {_labels.Count}");
+#endif
+            _lineChart.AddLabel(_labels.ToArray());
+        }
+        else
+        {
+#if DEBUG
+            if (!_firstRender)
+                await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Default labels");
+#endif
+            _labels = new List<string> {"1", "2", "3", "4", "5", "6" };
+            _lineChart.AddLabel(_labels.ToArray());
+        }
+
+        if (_lineChartDataSetList != null && _lineChartDataSetList.Count > 0)
+        {
+            foreach (var lineData in _lineChartDataSetList)
+            {
+#if DEBUG
+                if (!_firstRender)
+                    await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Add Data = {_lineChartDataSetList.Count}, nSamples = {lineData.Data.Count}");
+#endif
+                _lineChart.AddDataSet(lineData);
+            }
+        }
+        else
+        {
+#if DEBUG
+            if (!_firstRender)
+                await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - Default data");
+#endif
+            var data = new List<double> {100.0, 200.0, 300.0, 400.0, 500.0, 600.0};
+            _lineChart.AddDataSet(GetLineChartDataSet(data, 1));
+            data = new List<double> { 600.0, 500.0, 400.0, 300.0, 200.0, 100.0 };
+            _lineChart.AddDataSet(GetLineChartDataSet(data, 2));
+        }
+
+#if DEBUG
+        if (!_firstRender)
+            await JsRuntime.InvokeAsync<string>("console.log", $"Redraw - update");
+#endif
         await _lineChart.Update();
-        await Task.Delay(5);
     }
 
-    LineChartDataset<double> GetLineChartDataSet()
+    LineChartDataset<double> GetLineChartDataSet(List<double> data, int idx)
     {
         return new LineChartDataset<double>
         {
             Label = "# of randoms",
-            Data = _plotData,
-            BackgroundColor = _backgroundColors,
-            BorderColor = _borderColors,
+            Data = data,
+            BackgroundColor = _backgroundPlotColors.GetRange(idx,idx),
+            BorderColor = _borderPlotColors.GetRange(idx, idx),
             Fill = false,
             PointRadius = 2,
             BorderDash = new List<int>()
         };
     }
-
-    List<string> _labels = new List<string>();
-    readonly List<string> _backgroundColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 0.2f) };
-    readonly List<string> _borderColors = new List<string> { ChartColor.FromRgba(255, 99, 132, 1f) };
 
     protected override void OnInitialized()
     {
@@ -142,53 +193,149 @@ Snapshots Count: <strong>@_ssCount</strong>
         });
 
         _ssHubConnection.StartAsync();
-
-        // Chart Configuration
     }
 
-    async Task StartSnapshots()
+    /// <summary>
+    /// Starts snapshots
+    /// </summary>
+    /// <param name="timeSpan">Time Span</param>
+    /// <param name="selectedChannels">Selected Channels</param>
+    /// <returns></returns>
+    async Task StartSnapshotsStream(int timeSpan, HashSet<int> selectedChannels)
     {
-        await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshots");
-        await _ssHubConnection.SendAsync("SendSnapshot", _snapshotId, _ssCount);
-        _ssCount++;
-    }
-
-    async Task StartSnapshotsStream()
-    {
+#if DEBUG
+        foreach (var channel in selectedChannels)
+        {
+            await JsRuntime.InvokeAsync<string>("console.log", $"Ss StartSnapshotsStream Ss channel = {channel}");
+        }
+#endif
         _cancellationTokenSource = new CancellationTokenSource();
-
+#if DEBUG
         await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshotsStream");
-        var ssStream = _ssHubConnection.StreamAsync<int[]>("SnapshotsStream", _cancellationTokenSource.Token);
+#endif
+        var ssStream = _ssHubConnection.StreamAsync<int[]>("SnapshotsStream", timeSpan, selectedChannels, _cancellationTokenSource.Token);
+
+        // Check stream
+        if (ssStream == null)
+        {
+#if DEBUG
+            await JsRuntime.InvokeAsync<string>("console.log", "Ss StartSnapshotsStream - No channels selected");
+#endif
+            return;
+        }
+
+        var nSamples = timeSpan * 14;
+
+        // Update labels
+        UpdateLabels(nSamples);
 
         await foreach (var ss in ssStream)
         {
-            await JsRuntime.InvokeAsync<string>("console.log", $"Ss {_ssCount}, ssSamples {ss.Length}");
-            _ssCount++;
-            _plotData.Clear();
-
-            // Update Y axis
-            _plotData = ss.Select(ssElement => (double)ssElement).ToList();
-
-            // Update labels
-            _labels = new List<string>();
-            for (var i = 0; i < ss.Length; i++)
+            // Check number of expected samples in stream
+#if DEBUG
+            await JsRuntime.InvokeAsync<string>("console.log", $"Ss StartSnapshotsStream - Snapshot, ss.Len = {ss.Length}, nSamples = {nSamples}, nChannels = {selectedChannels.Count}");
+#endif
+            if (ss.Length != nSamples * selectedChannels.Count)
             {
-                _labels.Add(i.ToString());
+                continue;
             }
 
+            UpdateLineChartDataSet(ss, nSamples, selectedChannels.Count);
             await HandleRedraw();
+            await Task.Delay(5);
+            _ssCount++;
         }
         _ssCount = 0;
     }
 
+    private void UpdateLabels(in int nSamples)
+    {
+        if (_labels != null && nSamples == _labels.Count)
+            return;
+
+#if DEBUG
+        JsRuntime.InvokeAsync<string>("console.log", @"Ss Updated labels");
+#endif
+        _labels = new List<string>();
+        for (var i = 0; i < nSamples; i++)
+        {
+            _labels.Add(i.ToString());
+        }
+    }
+
+    public void UpdateLineChartDataSet(int[] ss, int nSamples, int nChannels)
+    {
+        // Organize channel data
+        _lineChartDataSetList = new List<LineChartDataset<double>>();
+        for (var i = 0; i < nChannels; i++)
+        {
+            var chData = ss.Skip(i* nSamples).Take(nSamples).Select(x => (double)x).ToList();
+#if DEBUG
+            JsRuntime.InvokeAsync<string>("console.log", $@"Ss Adding nSamples = {chData.Count}");
+#endif
+            var lineChartDataSet = new LineChartDataset<double>
+            {
+                Label = "Channel i",
+                Data = chData,
+                BackgroundColor = _backgroundPlotColors.GetRange(i, i),
+                BorderColor = _borderPlotColors.GetRange(i, i),
+                Fill = false,
+                PointRadius = 2,
+                BorderDash = new List<int>()
+            };
+            _lineChartDataSetList.Add(lineChartDataSet);
+        }
+    }
+
     async Task StopSnapshotsStream()
     {
+#if DEBUG
         await JsRuntime.InvokeAsync<string>("console.log", "Ss StopSnapshotsStream");
+#endif
         _cancellationTokenSource.Cancel();
     }
 
     public bool IsConnected =>
         _ssHubConnection.State == HubConnectionState.Connected;
 
+    // ReSharper disable once InconsistentNaming
+    async Task Request50ms()
+    {
+#if DEBUG
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss Request50ms");
+#endif  
+        await StartSnapshotsStream(50, _selectedChannelSet);
+    }
+
+    // ReSharper disable once InconsistentNaming
+    async Task Request1000ms()
+    {
+#if DEBUG
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss Request1000ms");
+#endif
+        await StartSnapshotsStream(1000, _selectedChannelSet);
+    }
+
+    // ReSharper disable once InconsistentNaming
+    async Task Request5000ms()
+    {
+#if DEBUG
+        await JsRuntime.InvokeAsync<string>("console.log", "Ss Request5000ms");
+#endif
+        await StartSnapshotsStream(5000, _selectedChannelSet);
+    }
+
+    void CheckboxClicked(int channelId, object checkedValue)
+    {
+        if ((bool)checkedValue)
+        {
+            _selectedChannelSet.Add(channelId);
+        }
+        else
+        {
+            _selectedChannelSet.Remove(channelId);
+        }
+    }
     // ReSharper restore UnusedMember.Local
 }
+
